@@ -5,14 +5,13 @@
 
 An-Hsien KAO [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?logo=linkedin&style=flat-square)](https://www.linkedin.com/in/an-hsien-kao-a63543342) , National Chengchi University, 116 Taipei, Taiwan. 
 
-# collaborators
+# Collaborators
 
 [Pu-Zhao KOW](https://puzhaokow1993.github.io/homepage/index.html), National Chengchi University, 116 Taipei, Taiwan. 
 
 [Yueh-Cheng KUO](https://sites.google.com/view/yckuo/home), National Chengchi University, 116 Taipei, Taiwan. 
 
 # Introduction 
-
 
 # functional-gkb
 ## Setup
@@ -27,12 +26,12 @@ python run.py <example> [--verbose] [--out NAME]
 ```
 
 ```
-python run.py examples/herglotz_sphere.py             # n = 3 Herglotz operator
-python run.py examples/herglotz_circle.py             # n = 2 Herglotz operator
+python run.py examples/Herglotz_n2.py             # n = 3 Herglotz operator
+python run.py examples/Herglotz_n3.py             # n = 2 Herglotz operator
 python run.py examples/multifreq_inverse_source.py    # multifrequency inverse source
 
-python run.py examples/herglotz_sphere.py --verbose           # print solver progress
-python run.py examples/herglotz_sphere.py --out my_run        # name the result folder
+python run.py examples/Herglotz_n2.py --verbose           # print solver progress
+python run.py examples/Herglotz_n2.py --out my_run        # name the result folder
 ```
 
 All settings are edited inside the example file. The command line only accepts `--verbose` and `--out`.
@@ -58,8 +57,8 @@ U, S, V = d["U"], d["S"], d["V"]
 
 | File | Operator |
 |---|---|
-| `examples/herglotz_circle.py` | Herglotz wave operator (n=2): $L^2(\mathbb{S}^1) \to L^2(B_1)$ |
-| `examples/herglotz_sphere.py` | Herglotz wave operator (n=3): $L^2(\mathbb{S}^2) \to L^2(B_1)$  |
+| `examples/Herglotz_n2.py` | Herglotz wave function (n=2): $L^2(\mathbb{S}^1) \to L^2(B_1)$ |
+| `examples/Herglotz_n3.py` | Herglotz wave function (n=3): $L^2(\mathbb{S}^2) \to L^2(B_1)$  |
 | `examples/multifreq_inverse_source.py` | $G_{\mathbf{k}}: L^2(B_1)\to L^2((0,\mathbf{k})\times\mathbb{S}^{n-1})$ |
 
 ## Adding an operator
@@ -118,3 +117,46 @@ functional-gkb/
 
 # Results 
 
+## Recovering the density of Herglotz wave function. 
+We consider the normalized Herglotz wave function restricted to the unit ball from [arXiv:2404.18482](https://arxiv.org/abs/2404.18482): 
+
+$$A_\kappa : L^2(\mathbb{S}^{n-1}) \to L^2(B_1), \quad A_\kappa(f) := \kappa^{\frac{n-1}{2}} \int_{\mathbb{S}^{n-1}} e^{i\kappa\omega \cdot x} f(\omega) \, \mathrm{d} S(\omega). $$
+
+We successfully reconstructed test functions with the following formula with $\tilde\sigma_j>0.1$:
+$$\tilde{f}_{N} = \sum_{j=1}^{N}\frac{1}{\tilde{\sigma}_{j}}(\mathsf{m},\tilde{\mathfrak{g}}_{j})_{Y}\tilde{\mathfrak{e}}_{j}$$
+
+### Case 1: $n=2~(\kappa=20)$ 
+
+| Test function | $R^2$ | plot|
+| -------- | -------- | -------- |
+| Sine wave    | 0.999997 | <img src="plot/sine.png" alt="Sine wave" width="30%" /> |
+| Indicator    | 0.963859 | <img src="plot/indicator.png" alt="Indicator" width="30%" />|
+| Square wave  | 0.900786 | <img src="plot/square.png" alt="Square wave" width="30%" /> |
+
+see: `examples/Herglotz_n2.py`
+
+### Case 2: $n=3~(\kappa=10)$ 
+
+| Test function | $R^2$ | plot|
+| -------- | -------- | -------- |
+| Highly oscillatory function | 0.983435| <img src="plot/d3_f_reconstruct_2.png" alt="Highly oscillatory function" width="30%" /> |
+| Low oscillatory function | 0.976296 | <img src="plot/d3_f_reconstruct_3.png" alt="Low oscillatory function" width="30%" /> |
+| Indicator | 0.937080 | <img src="plot/d3_f_reconstruct_1.png" alt="Indicator" width="30%" /> |
+
+see: `examples/Herglotz_n3.py`
+
+## Multifrequency inverse source problem
+
+We consider the multifrequency far-field operator with maximal wave number $\mathbf{k}$ from [arXiv:2401.13279](https://arxiv.org/abs/2401.13279):
+
+$$(G_{\mathbf{k}}f)(\kappa,\hat x) = \chi_{(0,\mathbf{k})}(\kappa) u_{\kappa}^{\infty}[f](\hat{x}) = \chi_{(0,\mathbf{k})}(\kappa) \mathscr{F}(f\chi_{B_{1}})(\kappa\hat{x})$$
+
+Similarly, We reconstruct test functions with the following formula with $\tilde\sigma_j>0.1$:
+$$\tilde{f}_{N} = \sum_{j=1}^{N}\frac{1}{\tilde{\sigma}_{j}}(\mathsf{m},\tilde{\mathfrak{g}}_{j})_{Y}\tilde{\mathfrak{e}}_{j}$$
+
+| Test function | $R^2$ | plot|
+| -------- | -------- | -------- |
+| Checkerboard function | 0.669669 | <img src="plot/inverse_source_ball.png" alt="Checkerboard function" width="45%" /> |
+| Indicator function | 0.852695 | <img src="plot/inverse_source_checkerboard.png" alt="Indicator function" width="45%" /> |
+
+see: `examples/multifreq_inverse_source.py`
