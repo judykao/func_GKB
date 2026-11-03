@@ -9,13 +9,25 @@ An-Hsien KAO [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?logo=linked
 
 [Yueh-Cheng KUO](https://sites.google.com/view/yckuo/home), National Chengchi University, 116 Taipei, Taiwan. 
 
-# Introduction 
+<!-- # Introduction  -->
 
 # functional-gkb
 ## Setup
 
-```
+```bash
 pip install numpy matplotlib
+```
+
+Tested with:
+
+- `python==3.11.13`
+- `numpy==2.3.1`
+- `matplotlib==3.10.0`
+
+To install the exact tested versions with conda:
+
+```bash
+conda create -n myenv -c conda-forge python=3.11.13 numpy=2.3.1 matplotlib=3.10.0
 ```
 
 ## Quick start
