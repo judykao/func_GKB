@@ -128,7 +128,7 @@ functional-gkb/
 # Results 
 
 ## Recovering the density of Herglotz wave function. 
-We consider the normalized Herglotz wave function restricted to the unit ball from [arXiv:2404.18482](https://arxiv.org/abs/2404.18482): 
+We consider the normalized Herglotz wave function restricted to the unit ball, as in [doi:10.1016/j.jfa.2025.110923](https://doi.org/10.1016/j.jfa.2025.110923): 
 
 ```math
 A_\kappa : L^2(\mathbb{S}^{n-1}) \to L^2(B_1), \quad A_\kappa(f) := \kappa^{\frac{n-1}{2}} \int_{\mathbb{S}^{n-1}} e^{i\kappa\omega \cdot x} f(\omega) \, \mathrm{d} S(\omega). 
@@ -161,7 +161,7 @@ see: `examples/Herglotz_n3.py`
 
 ## Multifrequency inverse source problem
 
-We consider the multifrequency far-field operator with maximal wave number $\mathbf{k}$ from [arXiv:2401.13279](https://arxiv.org/abs/2401.13279):
+We consider the multifrequency far-field operator with maximal wave number $\mathbf{k}$ from [doi:10.1112/tlm3.70031](https://doi.org/10.1112/tlm3.70031):
 ```math
 (G_{\mathbf{k}}f)(\kappa,\hat x) = \chi_{(0,\mathbf{k})}(\kappa) u_{\kappa}^{\infty}[f](\hat{x}) = \chi_{(0,\mathbf{k})}(\kappa) \mathscr{F}(f\chi_{B_{1}})(\kappa\hat{x})
 ```
