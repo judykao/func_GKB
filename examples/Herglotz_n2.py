@@ -3,7 +3,7 @@ import numpy as np
 from fgkb.sampling import gen_quasi_mc_points
 
 PARAMS = dict(
-    kappa=20, 
+    kappa=40, 
     N_theta=260, 
     N_x=1000
 )
