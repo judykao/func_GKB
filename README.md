@@ -41,10 +41,11 @@ python run.py examples/Herglotz_n3.py             # n = 2 Herglotz operator
 python run.py examples/multifreq_inverse_source.py    # multifrequency inverse source
 
 python run.py examples/Herglotz_n2.py --verbose           # print solver progress
+python run.py examples/Herglotz_n2.py --skip              # skip monitoring orthogonality (faster)
 python run.py examples/Herglotz_n2.py --out my_run        # name the result folder
 ```
 
-All settings are edited inside the example file. The command line only accepts `--verbose` and `--out`.
+All settings are edited inside the example file. The command line only accepts `--verbose`, `--skip` and `--out`.
 
 ## Output
 
@@ -101,11 +102,11 @@ Defined by `golub_kahan_thick_restart` in `fgkb/gkb.py`.
 | Parameter | Meaning |
 |---|---|
 | `K` | maximum Lanczos steps per restart cycle (Krylov subspace size) |
-| `n_threshold` | stop once this many singular triplets have converged |
+| `n_conv_ratio` | stop once the smallest singular value `S[0]` of converged singular triplets is smaller that `sigma_tol = n_conv_ratio * S[0]` |
 | `restart_threshold` | if more than `K * restart_threshold` this many converge in one cycle, lock them and deflate |
 | `max_restarts` | maximum restarts per deflation level |
 | `res_tol` | residual tolerance for declaring a Ritz triplet converged |
-| `tau_tol` | tolerance for loss of orthogonality; the cycle stops when exceeded |
+| `tau_tol` | (not required when `--skip` is on) tolerance for loss of orthogonality; the cycle stops when exceeded |
 
 ## Algorithm notes
 

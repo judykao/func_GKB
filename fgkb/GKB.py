@@ -35,7 +35,7 @@ def deflated_operator(T, T_adj, U_known, inner_cod):
 
 def _lanczos_bidiag(T, T_adj, inner_dom, inner_cod, v_init,
                     u_list=None, v_list=None, alpha=None, beta=None,
-                    K=100, tau_tol=1e-12, check_orth_freq=50, verbose=False):
+                    K=100, tau_tol=1e-12, check_orth_freq=50, verbose=False, monitor_tau=False):
     u_list = [] if u_list is None else u_list
     v_list = [] if v_list is None else v_list
     alpha = [] if alpha is None else alpha
@@ -69,18 +69,20 @@ def _lanczos_bidiag(T, T_adj, inner_dom, inner_cod, v_init,
         v = v / b
         v_list.append(v.copy())
 
-        if verbose and (j + 1) % check_orth_freq == 0:
-            tau_u = check_orthogonality(u_list, inner_cod)
-            tau_v = check_orthogonality(v_list[:-1], inner_dom)
-            tau = max(tau_u, tau_v)
-            print(f"[Step {j+1}] α={a:.4e}, β={b:.4e}, orth: u={tau_u:.2e}, v={tau_v:.2e}")
+        if monitor_tau:
+            if (j + 1) % check_orth_freq == 0:
+                tau_u = check_orthogonality(u_list, inner_cod)
+                tau_v = check_orthogonality(v_list[:-1], inner_dom)
+                tau = max(tau_u, tau_v)
+                if verbose:
+                    print(f"[Step {j+1}] α={a:.4e}, β={b:.4e}, orth: u={tau_u:.2e}, v={tau_v:.2e}")
 
-            ### Check orthogonality and break if it fails and reclaim the last few vectors
-            if tau > tau_tol:
-                fail = True
-                print(f"Orthogonality check failed at step {j+1} with tau={tau:.4e}")
-                final_beta = beta[-(check_orth_freq + 1)] if len(beta) > check_orth_freq else 0
-                return alpha, beta[:-(check_orth_freq + 1)], u_list, v_list[:-(check_orth_freq + 1)], final_beta, v_list[-1], fail
+                ### Check orthogonality and break if it fails and reclaim the last few vectors
+                if tau > tau_tol:
+                    fail = True
+                    print(f"Orthogonality check failed at step {j+1} with tau={tau:.4e}")
+                    final_beta = beta[-(check_orth_freq + 1)] if len(beta) > check_orth_freq else 0
+                    return alpha, beta[:-(check_orth_freq + 1)], u_list, v_list[:-(check_orth_freq + 1)], final_beta, v_list[-1], fail
 
         if b < 1e-14:
             fail = True
@@ -94,15 +96,15 @@ def _lanczos_bidiag(T, T_adj, inner_dom, inner_cod, v_init,
 
 
 def golub_kahan_thick_restart(T, T_adj, inner_dom, inner_cod, f0,
-                              K=200, n_threshold=400, restart_threshold=0.5,
+                              K=200, n_conv_ratio=400, restart_threshold=0.5,
                               max_restarts=10, res_tol=1e-16, tau_tol=1e-7,
-                              check_orth_freq=50, verbose=False):
+                              check_orth_freq=50, verbose=False, monitor_tau=False):
     T0, T_adj0 = T, T_adj                           # undeflated operator
     U, V, S = [], [], []
     v = f0 / _norm(inner_dom, f0)
 
     deflation_iter = 0
-    while len(S) < n_threshold:
+    while True:
         if deflation_iter > 0:
             T, T_adj = deflated_operator(T0, T_adj0, U, inner_cod)
             v = b_vec
@@ -120,7 +122,7 @@ def golub_kahan_thick_restart(T, T_adj, inner_dom, inner_cod, f0,
 
             alpha, beta, u_list, v_list, b, b_vec, fail = _lanczos_bidiag(
                 T, T_adj, inner_dom, inner_cod, v, u_list, v_list, alpha, beta,
-                K, tau_tol=tau_tol, check_orth_freq=check_orth_freq, verbose=verbose)
+                K, tau_tol=tau_tol, check_orth_freq=check_orth_freq, verbose=verbose, monitor_tau=monitor_tau)
 
             k = len(v_list)
             B = np.zeros((k, k), dtype=complex)
@@ -161,15 +163,24 @@ def golub_kahan_thick_restart(T, T_adj, inner_dom, inner_cod, f0,
             if verbose:
                 print(f"\nConverged in this iteration: {conv_n}")
 
-            if conv_n > np.round(K * restart_threshold):
+            if conv_n > np.round(K * restart_threshold) or fail:
                 U += [sum(u_list[j] * U_b[j, i] for j in range(k)) for i in range(conv_n)]
                 V += [sum(v_list[j] * V_b[j, i] for j in range(k)) for i in range(conv_n)]
                 S += s_b[:conv_n].tolist()
-                print(f"\nTotal converged: {len(S)}")
-                break
-
-            if len(S) >= n_threshold or fail:
-                return U, V, S
+                sigma_tol = n_conv_ratio * S[0]
+                print(f"\nTotal converged: {len(S)}, σ_tol={sigma_tol:.2e}, max σ={max(S):.6e}, min σ={min(S):.6e}", end="")
+                
+                if min(S) >= sigma_tol:
+                    print(" -> continuing (>= σ_tol)") 
+                    break
+                else:
+                    S = np.asarray(S)
+                    if min(S) < sigma_tol:
+                        print(" -> stopping (< σ_tol)") 
+                        return U, V, S[S>=sigma_tol]
+                    else:
+                        print(" -> stopping (fail or max restarts reached)") if monitor_tau else print(" -> stopping (max restarts reached)")
+                        return U, V, S
 
             new_u_list, new_v_list, alpha = [], [], []
             for i in range(l):
@@ -192,10 +203,10 @@ def golub_kahan_thick_restart(T, T_adj, inner_dom, inner_cod, f0,
 
             u_list, v_list = new_u_list.copy(), new_v_list.copy()
 
-            tau_u = check_orthogonality(u_list, inner_cod)
-            tau_v = check_orthogonality(v_list, inner_dom)
-            print(f"[Deflation {deflation_iter}] Restart {restart_iter+1}: "
-                  f"τ_u={tau_u:.2e}, τ_v={tau_v:.2e}, max τ={max(tau_u, tau_v):.2e}")
+            # tau_u = check_orthogonality(u_list, inner_cod)
+            # tau_v = check_orthogonality(v_list, inner_dom)
+            # print(f"[Deflation {deflation_iter}] Restart {restart_iter+1}: "
+            #       f"τ_u={tau_u:.2e}, τ_v={tau_v:.2e}, max τ={max(tau_u, tau_v):.2e}")
 
             v = T_adj(u) - a_l1 * b_vec
             for v_prev in v_list:
@@ -205,4 +216,3 @@ def golub_kahan_thick_restart(T, T_adj, inner_dom, inner_cod, f0,
             beta = [b_l1]
 
         deflation_iter += 1
-    return U, V, S

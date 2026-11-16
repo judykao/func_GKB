@@ -37,12 +37,14 @@ def main():
     p.add_argument("example")
     p.add_argument("--out", default=None, help="result folder name under results/")
     p.add_argument("--verbose", action="store_true", help="print solver progress")
+    p.add_argument("--skip", action="store_true", help="skip monitoring τ during Lanczos iteration")
     args = p.parse_args()
 
     mod = load(args.example)
     params = dict(getattr(mod, "PARAMS", {}))
     solver = dict(getattr(mod, "SOLVER", {}))
     solver["verbose"] = args.verbose
+    solver["monitor_tau"] = not args.skip
     stem = pathlib.Path(args.example).stem
     name = args.out or f"{stem}_{datetime.datetime.now():%Y%m%d_%H%M%S}"
     outdir = pathlib.Path("results") / name
@@ -55,7 +57,6 @@ def main():
         prob["T"], prob["T_adj"], prob["inner_dom"], prob["inner_cod"],
         prob["f0"], **solver)
 
-    S = np.asarray(S)
     np.savez(outdir / "solution.npz", U=np.array(U), S=S, V=np.array(V))
 
     fig, ax = plt.subplots(figsize=(6, 4))

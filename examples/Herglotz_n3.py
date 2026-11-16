@@ -3,17 +3,17 @@ import numpy as np
 from fgkb.sampling import gen_quasi_mc_points
 
 PARAMS = dict(
-    kappa=5, 
+    kappa=10, 
     N_theta=1000, 
-    N_x=10000
+    N_x=5000
 )
 
 SOLVER = dict(
-    K=100, 
-    n_threshold=200, 
+    K=200, 
+    n_conv_ratio=1e-2, 
     restart_threshold=0.5,
     max_restarts=10, 
-    res_tol=1e-13, 
+    res_tol=1e-10, 
     tau_tol=1e-7
 )
 
