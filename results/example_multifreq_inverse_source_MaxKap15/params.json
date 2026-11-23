@@ -1,0 +1,19 @@
+{
+  "example": "examples/multifreq_inverse_source.py",
+  "PARAMS": {
+    "k_max": 15,
+    "N_kappa": 10,
+    "N_x_hat": 100,
+    "N_ball": 5000
+  },
+  "SOLVER": {
+    "K": 400,
+    "n_conv_ratio": 0.01,
+    "restart_threshold": 0.5,
+    "max_restarts": 10,
+    "res_tol": 1e-10,
+    "tau_tol": 1e-07,
+    "verbose": true,
+    "monitor_tau": true
+  }
+}

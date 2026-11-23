@@ -1,0 +1,18 @@
+{
+  "example": "examples/Herglotz_n3.py",
+  "PARAMS": {
+    "kappa": 5,
+    "N_theta": 1000,
+    "N_x": 5000
+  },
+  "SOLVER": {
+    "K": 200,
+    "n_conv_ratio": 0.01,
+    "restart_threshold": 0.5,
+    "max_restarts": 10,
+    "res_tol": 1e-10,
+    "tau_tol": 1e-07,
+    "verbose": true,
+    "monitor_tau": true
+  }
+}

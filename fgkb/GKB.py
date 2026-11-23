@@ -41,7 +41,7 @@ def _lanczos_bidiag(T, T_adj, inner_dom, inner_cod, v_init,
     alpha = [] if alpha is None else alpha
     beta = [] if beta is None else beta
 
-    fail = False
+    fail = 0
     v_list.append(v_init.copy())
     j = len(v_list) - 1
     if verbose:
@@ -79,16 +79,18 @@ def _lanczos_bidiag(T, T_adj, inner_dom, inner_cod, v_init,
 
                 ### Check orthogonality and break if it fails and reclaim the last few vectors
                 if tau > tau_tol:
-                    fail = True
+                    fail = 1
                     print(f"Orthogonality check failed at step {j+1} with tau={tau:.4e}")
                     final_beta = beta[-(check_orth_freq + 1)] if len(beta) > check_orth_freq else 0
                     return alpha, beta[:-(check_orth_freq + 1)], u_list, v_list[:-(check_orth_freq + 1)], final_beta, v_list[-1], fail
 
         if b < 1e-14:
-            fail = True
+            fail = 2
             if verbose:
                 print(f"Breakdown at step {j+1}")
-            break
+            # break
+            final_beta = beta[-2] if beta else 0
+            return alpha[:-1], beta[:-2], u_list[:-1], v_list[:-2], final_beta, v_list[-2], fail
         j += 1
 
     final_beta = beta[-1] if beta else 0
@@ -169,18 +171,22 @@ def golub_kahan_thick_restart(T, T_adj, inner_dom, inner_cod, f0,
                 S += s_b[:conv_n].tolist()
                 sigma_tol = n_conv_ratio * S[0]
                 print(f"\nTotal converged: {len(S)}, σ_tol={sigma_tol:.2e}, max σ={max(S):.6e}, min σ={min(S):.6e}", end="")
-                
-                if min(S) >= sigma_tol:
-                    print(" -> continuing (>= σ_tol)") 
-                    break
-                else:
-                    S = np.asarray(S)
-                    if min(S) < sigma_tol:
-                        print(" -> stopping (< σ_tol)") 
-                        return U, V, S[S>=sigma_tol]
+
+                if fail == 1:
+                    if min(S) >= sigma_tol:
+                        print(" -> continuing (>= σ_tol)") 
+                        break
                     else:
-                        print(" -> stopping (fail or max restarts reached)") if monitor_tau else print(" -> stopping (max restarts reached)")
-                        return U, V, S
+                        U, V, S = np.asarray(U), np.asarray(V), np.asarray(S)
+                        if min(S) < sigma_tol:
+                            print(" -> stopping (< σ_tol)") 
+                            return U[S>=sigma_tol], V[S>=sigma_tol], S[S>=sigma_tol]
+                        else:
+                            print(" -> stopping (fail or max restarts reached)") if monitor_tau else print(" -> stopping (max restarts reached)")
+                            return U, V, S
+                else:
+                    print(" -> stopping (residual too small)")
+                    return U, V, S
 
             new_u_list, new_v_list, alpha = [], [], []
             for i in range(l):

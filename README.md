@@ -135,7 +135,7 @@ We consider the normalized Herglotz wave function restricted to the unit ball, a
 A_\kappa : L^2(\mathbb{S}^{n-1}) \to L^2(B_1), \quad A_\kappa(f) := \kappa^{\frac{n-1}{2}} \int_{\mathbb{S}^{n-1}} e^{i\kappa\omega \cdot x} f(\omega) \, \mathrm{d} S(\omega). 
 ```
 
-We successfully reconstructed test functions with the following formula with $\tilde\sigma_j>0.1$:
+We successfully reconstructed test functions with the following formula with $\rho=10^{-2}$:
 ```math
 \tilde{f}_{N} = \sum_{j=1}^{N}\frac{1}{\tilde{\sigma}_{j}}(\mathsf{m},\tilde{\mathfrak{g}}_{j})_{Y}\tilde{\mathfrak{e}}_{j}
 ```
@@ -144,9 +144,9 @@ We successfully reconstructed test functions with the following formula with $\t
 
 | Test function | $R^2$ | plot|
 | -------- | -------- | -------- |
-| Sine wave    | 0.999997 | <img src="plot/sine.png" alt="Sine wave" /> |
-| Indicator    | 0.963859 | <img src="plot/indicator.png" alt="Indicator" />|
-| Square wave  | 0.900786 | <img src="plot/square.png" alt="Square wave" /> |
+| Sine wave    | 0.999997 | <img src="results/Herglotz_n2_f2.png" alt="Sine wave" /> |
+| Indicator    | 0.963859 | <img src="results/Herglotz_n2_f3.png" alt="Indicator" />|
+| Square wave  | 0.900786 | <img src="results/Herglotz_n2_f1.png" alt="Square wave" /> |
 
 see: `examples/Herglotz_n2.py`
 
@@ -154,9 +154,9 @@ see: `examples/Herglotz_n2.py`
 
 | Test function | $R^2$ | plot|
 | -------- | -------- | -------- |
-| Highly oscillatory function | 0.983435| <img src="plot/d3_f_reconstruct_2.png" alt="Highly oscillatory function" /> |
-| Low oscillatory function | 0.976296 | <img src="plot/d3_f_reconstruct_3.png" alt="Low oscillatory function" /> |
-| Indicator | 0.937080 | <img src="plot/d3_f_reconstruct_1.png" alt="Indicator" /> |
+| Highly oscillatory function | 0.983435| <img src="results/Herglotz_n3_f2.png" alt="Highly oscillatory function" /> |
+| Low oscillatory function | 0.976296 | <img src="results/Herglotz_n3_f3.png" alt="Low oscillatory function" /> |
+| Indicator | 0.937080 | <img src="results/Herglotz_n3_f1.png" alt="Indicator" /> |
 
 see: `examples/Herglotz_n3.py`
 
@@ -167,14 +167,14 @@ We consider the multifrequency far-field operator with maximal wave number $\mat
 (G_{\mathbf{k}}f)(\kappa,\hat x) = \chi_{(0,\mathbf{k})}(\kappa) u_{\kappa}^{\infty}[f](\hat{x}) = \chi_{(0,\mathbf{k})}(\kappa) \mathscr{F}(f\chi_{B_{1}})(\kappa\hat{x})
 ```
 
-Similarly, We reconstruct test functions with the following formula with $\tilde\sigma_j>0.1$:
+Similarly, We reconstruct test functions with the following formula with $\rho=10^{-2}$:
 ```math
 \tilde{f}_{N} = \sum_{j=1}^{N}\frac{1}{\tilde{\sigma}_{j}}(\mathsf{m},\tilde{\mathfrak{g}}_{j})_{Y}\tilde{\mathfrak{e}}_{j}
 ```
 
 | Test function | $R^2$ | plot|
 | -------- | -------- | -------- |
-| Checkerboard function | 0.669669 | <img src="plot/inverse_source_ball.png" alt="Checkerboard function" /> |
-| Indicator function | 0.852695 | <img src="plot/inverse_source_checkerboard.png" alt="Indicator function" /> |
+| Checkerboard function | 0.669669 | <img src="results/inverse_source_f1.png" alt="Checkerboard function" /> |
+| Indicator function | 0.852695 | <img src="results/inverse_source_f2.png" alt="Indicator function" /> |
 
 see: `examples/multifreq_inverse_source.py`
